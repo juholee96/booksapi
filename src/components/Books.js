@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import SearchBar from "./SearchBar";
 import BookList from "./BookList";
+import ReadLater from "./ReadLater";
 import request from "superagent";
+import ls from "local-storage";
 
 class Books extends Component {
   constructor(props) {
@@ -11,9 +13,28 @@ class Books extends Component {
       //create local state to store list of books
       books: [],
       searchField: "",
-      readingList: [],
+      readLater: [],
     };
   }
+
+  componentWillMount() {
+    this.setState({
+      readLater: ls.get("readLater") || [],
+    });
+  }
+
+  handleReadLater = (book) => {
+    let currentReadLaterState = this.state.readLater.slice(0);
+
+    let newReadLaterState = [...currentReadLaterState, book];
+    if (!this.state.readLater.includes(book)) {
+      this.setState({
+        readLater: newReadLaterState,
+      });
+      ls.set("readLater", newReadLaterState);
+    }
+    console.log("!!!!!added to read later!!!!!!!");
+  };
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -25,6 +46,7 @@ class Books extends Component {
         maxResults: "5",
       })
       .then((data) => {
+        console.log("dataaaa ->>>>>", data);
         this.setState({ books: [...data.body.items] });
       });
   };
@@ -34,10 +56,16 @@ class Books extends Component {
   };
 
   render() {
+    console.log("readLater in Book Container---->", this.state.readLater);
     return (
       <div>
         <SearchBar handleSubmit={this.handleSubmit} handleForm={this.handleForm} />
-        <BookList books={this.state.books} />
+        <BookList
+          books={this.state.books}
+          readLater={this.state.readLater}
+          handleReadLater={this.handleReadLater}
+        />
+        <ReadLater readLater={this.state.readLater} />
       </div>
     );
   }

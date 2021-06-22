@@ -4,6 +4,7 @@ import SingleBook from "./SingleBook";
 const BookList = (props) => {
   console.log("bookList prop---->", props);
   const books = props.books; // an array []
+  const handleReadLater = props.handleReadLater;
 
   return (
     <div className="book-list">
@@ -15,6 +16,7 @@ const BookList = (props) => {
               title={book.volumeInfo.title}
               author={book.volumeInfo.authors}
               published={book.volumeInfo.publishedDate}
+              handleReadLater={handleReadLater}
             />
             ;
           </div>
